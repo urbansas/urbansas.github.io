@@ -1,0 +1,45 @@
+/* Plano interactivo de lotes de San Julián Urbano. Paleta del sitio: verde #3D4437, arena #FAF6F1, cobre profundo #8A4E2E. */
+.pista { margin: 0 0 8px; }
+.solo-movil { display: none; }
+.leyenda { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 0 0 12px; font-size: 14px; }
+.leyenda > span { display: inline-flex; align-items: center; gap: 8px; }
+.muestra { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #FAF6F1; box-shadow: 0 0 0 1px #3D4437; display: inline-block; }
+.muestra[data-estado="disponible"] { background: #3D4437; }
+.muestra[data-estado="vendido"] { background: #D9D4C9; box-shadow: 0 0 0 1px #8C887C; }
+.plano { margin: 0; }
+/* En pantallas angostas el plano conserva un ancho legible y se recorre deslizando: a 960 px cada círculo mide ~27 px. */
+.plano-caja { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--linea); border-radius: 12px; background: #fff; }
+.plano-lienzo { position: relative; min-width: 960px; }
+.plano-lienzo img { width: 100%; height: auto; }
+.plano-lienzo svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.plano figcaption { font-size: 13px; color: var(--suave); margin-top: 6px; }
+@media (max-width: 995px) { .solo-movil { display: inline; } }
+.lote { cursor: pointer; }
+.lote text { font-family: inherit; font-weight: 700; pointer-events: none; }
+.lote[data-estado="disponible"] circle { fill: #3D4437; stroke: #FAF6F1; stroke-width: 3; }
+.lote[data-estado="disponible"] text { fill: #FAF6F1; }
+.lote[data-estado="vendido"] circle { fill: #D9D4C9; fill-opacity: .9; stroke: #8C887C; stroke-width: 2; }
+.lote[data-estado="vendido"] text { fill: #5E5A50; text-decoration: line-through; }
+.lote:hover circle { stroke-width: 6; }
+.lote:focus { outline: none; }
+.lote:focus-visible circle { stroke: #8A4E2E; stroke-width: 7; }
+.fuera-de-venta { margin: 8px 0 0; }
+.disponibles { list-style: none; padding: 0; display: grid; gap: 10px; }
+.disponibles strong { display: block; margin-bottom: 4px; }
+.lote-lista { display: inline-block; margin: 0 6px 6px 0; padding: 6px 12px; border-radius: 999px; background: #fff; border: 1px solid var(--linea); color: var(--cobre-hondo); font-size: 14px; font-weight: 600; text-decoration: none; }
+.lote-lista:hover, .lote-lista:focus-visible { border-color: var(--cobre-hondo); }
+.ficha-lote { border: 0; border-radius: 16px; padding: 22px 22px 20px; width: min(92vw, 380px); background: var(--arena); color: var(--texto); box-shadow: 0 12px 40px rgba(35, 40, 31, .35); }
+.ficha-lote::backdrop { background: rgba(35, 40, 31, .55); }
+.ficha-lote form { position: absolute; top: 8px; right: 8px; margin: 0; }
+.ficha-cerrar { width: 44px; height: 44px; border: 0; background: transparent; font-size: 20px; color: var(--texto); cursor: pointer; }
+.ficha-titulo { margin: 0 36px 6px 0; font-size: 22px; }
+.ficha-estado { margin: 0 0 12px; font-weight: 600; }
+.ficha-estado[data-estado="disponible"] { color: #3D4437; }
+.ficha-estado[data-estado="vendido"] { color: var(--suave); }
+.ficha-datos { margin: 0 0 16px; }
+.ficha-datos div { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-top: 1px solid var(--linea); }
+.ficha-datos dt { color: var(--suave); }
+.ficha-datos dd { margin: 0; font-weight: 600; }
+.ficha-whatsapp { display: block; }
+/* Un display de arriba le gana al atributo hidden del navegador: sin esto el vendido mostraba el botón de WhatsApp. */
+.ficha-lote [hidden] { display: none !important; }

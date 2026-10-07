@@ -1,0 +1,47 @@
+@font-face { font-family: Montserrat; src: url(/fuentes/montserrat.woff2) format("woff2"); font-weight: 100 900; font-display: swap; }
+:root { --verde: #3D4437; --cobre: #C5865B; --cobre-hondo: #8A4E2E; --arena: #FAF6F1; --texto: #23281F; --suave: #5A5A4E; --linea: #E6DDD2; }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--arena); color: var(--texto); font: 400 17px/1.6 Montserrat, system-ui, sans-serif; padding-bottom: 76px; }
+img, video { max-width: 100%; height: auto; display: block; }
+a { color: var(--cobre-hondo); }
+h1, h2, h3 { line-height: 1.2; font-weight: 700; }
+h1 { font-size: clamp(28px, 6vw, 44px); margin: 0 0 .4em; }
+h2 { font-size: clamp(22px, 4.5vw, 30px); margin: 1.6em 0 .5em; border-left: 4px solid var(--cobre); padding-left: 12px; }
+main { max-width: 1080px; margin: 0 auto; padding: 0 18px; }
+.encabezado { background: var(--verde); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 18px; padding: 10px 18px; }
+.marca { display: flex; align-items: center; gap: 10px; color: var(--cobre); text-decoration: none; font-weight: 600; letter-spacing: .14em; font-size: 18px; }
+.marca small { font-size: .62em; letter-spacing: .3em; }
+.menu { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.menu a { color: var(--arena); text-decoration: none; font-size: 14px; padding: 6px 0; }
+.menu a[aria-current="page"] { border-bottom: 2px solid var(--cobre); }
+.heroe { position: relative; margin: 0 -18px; }
+.heroe img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+.heroe .sobre { position: absolute; left: 0; right: 0; bottom: 0; padding: 18px; background: linear-gradient(transparent, rgba(35,40,31,.85)); color: #fff; }
+.heroe h1 { color: #fff; }
+.galeria { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 16px; align-items: start; }
+.galeria img { width: 100%; border-radius: 12px; border: 1px solid var(--linea); }
+.galeria.una { grid-template-columns: minmax(0, 520px); }  /* una sola foto, vertical: no se estira al ancho de la página */
+.galeria figure { margin: 0; }
+.galeria .ancha { grid-column: 1 / -1; max-width: 780px; }
+.galeria figcaption { font-size: 13px; color: var(--suave); margin-top: 6px; }
+.tarjetas { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.tarjeta { background: #fff; border: 1px solid var(--linea); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+.tarjeta img { aspect-ratio: 16/10; object-fit: cover; width: 100%; }
+.tarjeta .cuerpo { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.tarjeta h3 { margin: 0; font-size: 19px; }
+.tarjeta .tipo { color: var(--suave); font-size: 14px; margin: 0; }
+.rango { color: var(--cobre-hondo); font-weight: 600; border-left: 3px solid var(--cobre); padding-left: 8px; margin: 6px 0 0; }
+.minutos { font-size: 14px; color: var(--suave); margin: 0; }
+.boton { display: inline-block; background: var(--cobre-hondo); color: #fff; text-decoration: none; font-weight: 600; padding: 12px 20px; border-radius: 999px; margin-top: auto; text-align: center; }
+.whatsapp-fijo { position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 50; background: var(--cobre-hondo); color: #fff; text-align: center; padding: 14px; border-radius: 999px; font-weight: 600; text-decoration: none; }
+@media (min-width: 760px) { .whatsapp-fijo { left: auto; right: 24px; bottom: 24px; padding: 14px 24px; } body { padding-bottom: 0; } }
+.lista-datos { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px 24px; }
+.lista-datos li::before { content: ""; display: inline-block; width: 8px; height: 8px; background: var(--cobre); border-radius: 2px; margin-right: 10px; vertical-align: 2px; }
+.planito { background: #fff; border: 1px solid var(--linea); border-radius: 12px; padding: 8px; }
+.nota { font-size: 13px; color: var(--suave); }
+.pie { background: var(--verde); color: var(--arena); padding: 24px 18px 96px; margin-top: 48px; font-size: 14px; text-align: center; }
+.pie a { color: var(--arena); text-decoration: underline; }
+.hecho { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.hecho div { background: var(--verde); color: var(--arena); border-radius: 12px; padding: 16px; }
+.hecho strong { color: var(--cobre); display: block; font-size: 24px; }

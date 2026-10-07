@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://urbansas.github.io/sitemap.xml

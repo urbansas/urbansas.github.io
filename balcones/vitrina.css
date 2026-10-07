@@ -1,0 +1,305 @@
+/* Vitrina de Balcones: el plano de lotes, la ficha de cada lote y el
+   anteproyecto de la casa modelo. Viene de balcones-web (assets/css/estilos.css),
+   solo las reglas de la vitrina, con los colores pasados a las variables de
+   /css/urban.css. Los estilos del tablero de socios no se trajeron: ese tablero
+   no existe en este sitio.
+
+   Una unidad del viewBox del plano es un PUNTO del plano original, no un
+   metro, y por eso los tamaños de letra del plano aéreo son grandes. */
+
+/* ── Plano de lotes (ortofoto con los lotes vigentes encima) ──────────────
+   El color de cada lote sale de acá, disparado por el data-estado que pone
+   js/mapa.js desde data/lotes.json. Gris por omisión, verde solo si el dato
+   dice «disponible»: si algo falla, ningún lote se anuncia como libre. */
+.mapa-caja { margin: 0; }
+.mapa { display: block; width: 100%; height: auto; font-family: inherit; }
+.mapa .lote { fill: rgba(226, 228, 222, .34); stroke: #fff; stroke-width: 2.2; cursor: pointer; }
+/* Los que NO se han vendido van oscuros y opacos: son los únicos que el
+   visitante tiene que reconocer de un vistazo, y un verde translúcido sobre
+   pasto no se distingue. Los colocados se van al otro lado, claros y muy
+   transparentes, para que se lean como fondo. El borde punteado es la única
+   señal de que eso se toca en un teléfono, donde no existe «pasar el mouse». */
+.mapa .lote[data-estado="disponible"] {
+  fill: rgba(61, 68, 55, .85); stroke-dasharray: 13 9; stroke-width: 4;
+}
+/* Reservado no es verde de libre ni gris de colocado: va en cobre profundo. */
+.mapa .lote[data-estado="reservado"] { fill: rgba(138, 78, 46, .85); }
+.mapa .lote:hover { stroke: var(--cobre); stroke-width: 5; }
+/* El foco del teclado va por fuera del polígono para que no lo tape el lote de
+   al lado; en SVG el outline del navegador no se dibuja parejo. */
+.mapa .lote:focus-visible { stroke: var(--cobre); stroke-width: 7; outline: none; }
+
+/* Lo que todavía no está loteado. NO es un lindero: es el perímetro de la
+   finca menos los 14 lotes. */
+.mapa .resto { fill: rgba(35, 40, 31, .34); }
+.mapa .perimetro { fill: none; stroke: #fff; stroke-width: 3; stroke-dasharray: 18 12; }
+.mapa .rotulo-resto {
+  fill: #fff; font-size: 46px; font-weight: 600; text-anchor: middle;
+  letter-spacing: .06em;
+}
+.mapa .rotulo-lote { pointer-events: none; text-anchor: middle; }
+.mapa .rotulo-lote .numero { font-size: 52px; font-weight: 700; fill: #fff; }
+.mapa .rotulo-lote .area { font-size: 26px; fill: rgba(255, 255, 255, .9); }
+.mapa .rotulo-lote .marca {
+  font-size: 27px; font-weight: 700; letter-spacing: .08em; fill: #4a5148;
+}
+/* Sobre los lotes claros el texto blanco desaparece. */
+.mapa .rotulo-lote[data-estado="vendido"] .numero,
+.mapa .rotulo-lote[data-estado="especie"] .numero { fill: #3f4740; }
+.mapa .rotulo-lote[data-estado="vendido"] .area,
+.mapa .rotulo-lote[data-estado="especie"] .area { fill: #5c6459; }
+
+/* En celular el plano entero mide 375 px para 540 m de finca: el área y la
+   palabra «VENDIDO» salen a 5 px y no se leen. Se quedan el número, más
+   grande, y el color. */
+@media (max-width: 699px) {
+  .mapa .rotulo-lote .area,
+  .mapa .rotulo-lote .marca { display: none; }
+  .mapa .rotulo-lote .numero { font-size: 68px; }
+}
+/* El predio es alto y flaco (420 m por 150 m): a todo el ancho de un
+   escritorio no cabe a lo alto, así que ahí se limita y se centra. */
+@media (min-width: 700px) {
+  .mapa { max-width: 700px; margin: 0 auto; }
+}
+
+/* La pista va ARRIBA del plano y no en letra chica: es la instrucción que
+   decide si alguien toca el plano o lo mira y sigue de largo. */
+.pista {
+  font-size: 1rem; color: var(--texto);
+  background: #fff; border-left: 3px solid var(--cobre); border-radius: 0;
+  padding: .75rem 1rem; margin: 1.25rem 0 1rem;
+}
+
+.leyenda {
+  display: flex; flex-wrap: wrap; gap: .4rem 1.25rem;
+  font-size: .9rem; color: var(--suave); margin: .6rem 0 1.5rem;
+}
+.leyenda > span { display: inline-flex; align-items: center; gap: .45rem; }
+.leyenda .muestra {
+  width: 1rem; height: 1rem; border-radius: 3px;
+  background: #ced2cb; border: 1px solid var(--linea);
+}
+.leyenda .muestra[data-estado="disponible"] { background: var(--verde); border-color: var(--verde); }
+.leyenda .muestra[data-estado="reservado"] { background: var(--cobre-hondo); border-color: var(--cobre-hondo); }
+.leyenda .muestra[data-estado="resto"] { background: rgba(35, 40, 31, .55); border-color: var(--texto); }
+/* La casilla de «Reservado» solo se muestra si hay alguno; la esconde la
+   página con el dato, no una decisión escrita a mano acá. */
+.leyenda [hidden] { display: none; }
+
+/* ── Tarjetas de los lotes disponibles ────────────────────────────────── */
+.tarjeta { position: relative; }
+.tarjeta:hover { border-color: var(--verde); }
+.tarjeta .abrir {
+  font: inherit; font-size: 1.17rem; font-weight: 700; line-height: 1.2;
+  color: var(--verde); background: none; border: 0; padding: 0;
+  cursor: pointer; text-align: left;
+}
+/* El botón dice «Lote 7» pero se pulsa toda la tarjeta: el ::after se estira
+   sobre ella. */
+.tarjeta .abrir::after { content: ''; position: absolute; inset: 0; }
+.tarjeta .abrir:focus-visible { outline: 2px solid var(--cobre-hondo); outline-offset: 3px; }
+
+/* ── Ficha de un lote ────────────────────────────────────────────────────
+   Se abre desde el plano y desde las tarjetas. Es un <dialog> nativo: el Esc,
+   el fondo oscuro y el foco atrapado adentro vienen del navegador. */
+.ficha {
+  border: 0; border-radius: 12px; padding: 0;
+  width: min(28rem, calc(100vw - 2rem));
+  /* Columna: arriba lo que se desplaza, abajo el botón, que no se mueve. */
+  max-height: 90dvh; overflow: hidden;
+  display: flex; flex-direction: column;
+  color: var(--texto); background: #fff;
+}
+.ficha-cuerpo { overflow: auto; padding: 1.5rem; }
+/* ⚠️ ESTA REGLA NO SE PUEDE BORRAR. El navegador esconde un <dialog> cerrado
+   con `dialog:not([open]) { display: none }`; al ponerle `display: flex` arriba
+   esa regla quedó pisada y la ficha CERRADA se dibujaba dentro de la página. */
+dialog.ficha:not([open]) { display: none; }
+
+.ficha::backdrop { background: rgba(35, 40, 31, .6); }
+.ficha-cerrar-caja { float: right; margin: -.5rem -.5rem 0 0; }
+/* 44x44 es el mínimo para un dedo. */
+.ficha-cerrar {
+  font: inherit; font-size: 1.1rem; line-height: 1;
+  background: none; border: 0; color: var(--suave); cursor: pointer;
+  width: 44px; height: 44px; padding: 0; border-radius: 8px;
+}
+.ficha-cerrar:hover { color: var(--texto); background: var(--arena); }
+.ficha-titulo { margin: 0; color: var(--verde); font-size: 1.5rem; }
+/* Gris por omisión y verde solo si el dato dice «disponible», igual que el
+   plano. */
+.ficha-estado {
+  display: inline-block; margin: .5rem 0 0;
+  font-size: .8rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--suave); background: var(--linea); border-radius: 999px; padding: .2rem .7rem;
+}
+.ficha-estado[data-estado="disponible"] { color: #fff; background: var(--verde); }
+.ficha-estado[data-estado="reservado"] { color: #fff; background: var(--cobre-hondo); }
+
+/* El visor 360. La altura sale de la proporción porque Pannellum mide su
+   contenedor al arrancar: con altura automática mide cero y no hay ningún
+   error que lo diga. En escritorio 16:9; en teléfono 4:5, vertical. */
+.ficha-pano-caja { position: relative; margin: 1.25rem 0 0; }
+.ficha-pano-caja[hidden] { display: none; }
+.ficha-pano {
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--linea);
+}
+@media (max-width: 699px) {
+  .ficha-pano { aspect-ratio: 4 / 5; }
+}
+
+/* El botón de agrandar va SOBRE la vista, abajo a la derecha, lejos de los
+   controles de zoom que Pannellum pone arriba a la izquierda. */
+.ficha-agrandar {
+  position: absolute; right: .5rem; bottom: .5rem;
+  font: inherit; font-size: .85rem; font-weight: 600;
+  color: var(--texto); background: rgba(255, 255, 255, .92);
+  border: 0; border-radius: 999px; padding: .45rem .9rem;
+  cursor: pointer;
+}
+.ficha-agrandar:hover { background: #fff; }
+
+/* La barra de pantalla completa. Fuera de ese modo no existe. */
+.ficha-barra { display: none; }
+
+/* ── Pantalla completa ────────────────────────────────────────────────────
+   `dvh` y no `vh` porque en un teléfono `vh` cuenta la barra de direcciones. */
+.ficha.agrandada {
+  width: 100vw; max-width: none;
+  height: 100dvh; max-height: none;
+  margin: 0; padding: 0; border-radius: 0;
+  display: flex; flex-direction: column;
+}
+.ficha.agrandada .ficha-cerrar-caja,
+.ficha.agrandada .ficha-titulo,
+.ficha.agrandada .ficha-estado,
+.ficha.agrandada .ficha-datos,
+.ficha.agrandada .ficha-agrandar { display: none; }
+
+.ficha.agrandada .ficha-barra {
+  display: flex; align-items: center; gap: .5rem;
+  padding: .5rem .75rem;
+  background: var(--verde); color: var(--arena);
+  font-size: .9rem;
+}
+/* Los dos botones de la barra, con 44 px de alto: el mínimo para un dedo. */
+.ficha-barra-texto { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ficha.agrandada .ficha-reducir {
+  font: inherit; font-weight: 600; white-space: nowrap;
+  color: var(--verde); background: var(--arena);
+  border: 0; border-radius: 999px; padding: 0 1.1rem; height: 44px; cursor: pointer;
+}
+.ficha.agrandada .ficha-cerrar-todo {
+  font: inherit; font-size: 1.15rem; line-height: 1;
+  color: var(--arena); background: none; border: 0;
+  width: 44px; height: 44px; padding: 0; border-radius: 8px; cursor: pointer;
+}
+/* Fuera de la vista grande la barra entera no existe, botones incluidos. */
+.ficha-cerrar-todo { display: none; }
+.ficha.agrandada .ficha-cerrar-todo { display: block; }
+.ficha.agrandada .ficha-cuerpo {
+  flex: 1; min-height: 0; padding: 0; overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.ficha.agrandada .ficha-pano-caja { flex: 1; margin: 0; min-height: 0; }
+.ficha.agrandada .ficha-pano { aspect-ratio: auto; height: 100%; border-radius: 0; }
+.ficha.agrandada .boton { margin: 0; border-radius: 0; }
+/* Pannellum le pone la clase `pnlm-container` AL MISMO div, no a uno adentro:
+   con un selector de descendiente la regla no engancha nunca y manda el borde
+   gris que trae la librería. */
+.ficha-pano.pnlm-container { border: 0; background: var(--linea); }
+
+.ficha-datos { margin: 1.25rem 0 0; }
+.ficha-datos > div {
+  display: flex; justify-content: space-between; gap: 1rem;
+  padding: .55rem 0; border-bottom: 1px solid var(--linea);
+}
+.ficha-datos dt { color: var(--suave); min-width: 0; }
+/* El valor no se parte nunca: «Área escriturable» es la etiqueta más larga y
+   en un teléfono empujaba el «2.140 m²» a dos renglones. La etiqueta sí
+   puede partirse, que para eso es la que sobra. */
+.ficha-datos dd { margin: 0; font-weight: 600; text-align: right; white-space: nowrap; }
+.ficha-mapa {
+  display: inline-block; margin-top: 1.1rem;
+  color: var(--cobre-hondo); font-weight: 600; text-decoration: none;
+  border-bottom: 1px solid currentColor;
+}
+.ficha-mapa[hidden] { display: none; }
+.ficha-mapa::before { content: '◎ '; }
+
+/* Las dos áreas del lote que se entrega más grande de lo que se escritura, y
+   la nota que explica por qué: sin la nota, el comprador cree que la
+   escritura le va a decir la cifra grande. */
+.ficha-area-real-fila[hidden] { display: none; }
+.ficha-area-real { color: var(--cobre-hondo); font-weight: 700; }
+.ficha-nota-area {
+  margin: .7rem 0 0; padding: .6rem .75rem;
+  background: var(--arena); border-left: 3px solid var(--cobre); border-radius: 0 8px 8px 0;
+  font-size: .85rem; color: var(--suave);
+}
+.ficha-nota-area[hidden] { display: none; }
+.tarjeta .area-real { color: var(--cobre-hondo); font-weight: 600; }
+
+/* El anteproyecto DENTRO de la ficha. Se separa con una línea arriba para que
+   se lea como otra cosa —esto no se vende, es lo que se PODRÍA construir—
+   sin sacarlo del mismo desplazamiento donde está el botón de WhatsApp. */
+.ficha-casa {
+  margin-top: 1.6rem; padding-top: 1.4rem; border-top: 1px solid var(--linea);
+}
+.ficha-casa[hidden] { display: none; }
+/* A pantalla completa manda la panorámica y nada más. */
+.ficha.agrandada .ficha-casa { display: none; }
+
+.casa-titulo { margin: 0 0 .3rem; font-size: 1.15rem; color: var(--verde); }
+.casa-entrada { margin: 0 0 .9rem; color: var(--suave); }
+
+/* El aviso aparece dos veces, antes del video y después de la galería. No es
+   formalismo: es lo que separa una propuesta de una promesa. */
+.casa-aviso {
+  margin: .9rem 0; padding: .7rem .85rem;
+  border-left: 3px solid var(--cobre); background: var(--arena);
+  font-size: .9rem; color: var(--texto);
+}
+
+.casa-video { width: 100%; border-radius: 10px; display: block; background: #000; }
+.casa-pie { font-size: .8rem; color: var(--suave); margin: .4rem 0 0; }
+
+/* Dos columnas SIEMPRE: la ficha mide unos 450 px aunque la ventana sea ancha,
+   y a cuatro columnas «15 × 22 m» se parte en tres renglones. */
+.casa-datos {
+  display: grid; grid-template-columns: 1fr 1fr; gap: .6rem;
+  margin: 1rem 0 0; padding: 0; list-style: none;
+}
+.casa-datos li {
+  border: 1px solid var(--linea); border-radius: 8px; padding: .6rem .7rem;
+  background: #fff;
+}
+.casa-datos b { display: block; font-size: 1.1rem; color: var(--verde); }
+.casa-datos span { font-size: .8rem; color: var(--suave); }
+
+.casa-galeria { display: grid; gap: 1rem; margin-top: 1.2rem; }
+.casa-galeria figure { margin: 0; }
+.casa-galeria img {
+  width: 100%; height: auto; border-radius: 10px; display: block;
+  background: var(--linea);
+}
+.casa-galeria figcaption { font-size: .8rem; color: var(--suave); margin-top: .35rem; }
+
+/* La salida hacia los lotes en venta, en la ficha de uno colocado. */
+.ficha-hacia-disponibles {
+  display: block; margin-top: 1rem;
+  color: var(--cobre-hondo); font-weight: 600; text-decoration: none;
+}
+.ficha-hacia-disponibles[hidden] { display: none; }
+.ficha-hacia-disponibles::after { content: ' →'; }
+.ficha.agrandada .ficha-mapa { display: none; }
+
+/* El botón es la última fila de la columna y no se desplaza nunca. Se probó
+   `position: sticky` dentro del cuerpo con relleno y no sirve: la franja queda
+   flotando a media ficha con un vacío blanco debajo. */
+.ficha .boton { display: block; flex: none; margin: 0; border-radius: 0 0 12px 12px; }
+.ficha .boton[hidden] { display: none; }
