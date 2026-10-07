@@ -26,6 +26,16 @@
 
 <section class="heroe"><img src="/img/parque-1600.webp" srcset="/img/parque-800.webp 800w, /img/parque-1600.webp 1600w" sizes="100vw" alt="Parque principal de Santa Rosa de Osos desde el aire" fetchpriority="high" width="1600" height="900">
   <div class="sobre"><h1>Desde el parque de Santa Rosa</h1><p>Lotes, apartamentos y bodegas. Diseñamos, construimos y vendemos aquí.</p></div></section>
+<h2>El parque en 360°</h2>
+<p>Santa Rosa desde el aire, sobre el parque principal. Toque la imagen y arrástrela para mirar alrededor. Foto de dron del 6 de octubre de 2026.</p>
+<div class="visor360" data-pano="/img/parque-360.jpg" data-yaw="-60" data-pitch="-20">
+  <img src="/img/parque-360-800.webp" srcset="/img/parque-360-800.webp 800w, /img/parque-360-1600.webp 1600w" sizes="(max-width: 1080px) 100vw, 1044px" alt="Vista desde el aire del parque principal y la catedral de Santa Rosa de Osos" loading="lazy" width="1600" height="900">
+  <button type="button" class="visor360-abrir">Mover la vista 360°</button>
+</div>
+<script type="module">
+  import { montar360 } from '/js/visor360.js';
+  document.querySelectorAll('.visor360').forEach(montar360);
+</script>
 <h2>Nuestros proyectos</h2>
 <div class="tarjetas"><article class="tarjeta" data-proyecto="balcones"><img src="/img/balcones-portada-800.webp" alt="" loading="lazy">
   <div class="cuerpo"><h3>Condominio Balcones</h3><p class="tipo">Lotes de casa-finca</p><p class="rango">de 2.129 a 2.760 m² · desde $234 hasta $304 millones</p><p class="minutos">≈ 10 min en carro del parque</p>
