@@ -1,6 +1,7 @@
-// La ficha de un lote del plano de San Julián Urbano: lo que se ve al tocar un lote en el plano o en la lista.
+// La ficha de un lote de San Julián Urbano (lo que se ve al tocar un lote en la foto, en el plano o en la lista) y el
+// selector entre la foto real y el plano.
 //
-// El servidor ya dejó el plano armado (src/lib/plano-san-julian.js): cada lote es un enlace con su etapa, su número,
+// El servidor ya dejó las dos vistas armadas (src/lib/plano-san-julian.js): cada lote es un enlace con su etapa, su número,
 // su área y su estado en atributos data-*, y el disponible lleva en el href su mensaje de WhatsApp. Acá no hay
 // datos propios: este módulo solo copia eso a un <dialog>. Sin JavaScript, o en un navegador sin <dialog>, los
 // disponibles siguen siendo enlaces directos a WhatsApp y nada se rompe.
@@ -15,6 +16,30 @@ export function construirFicha({ etapa, lote, area, estado, whatsapp }) {
     disponible,
     whatsapp: disponible ? whatsapp ?? null : null
   };
+}
+
+// Qué vista queda a la vista y cuál oculta: una sola. Las vistas ocultas llevan `hidden`, así sus enlaces no se anuncian
+// ni se enfocan con el teclado, y el botón de la vista activa es el único con aria-pressed="true".
+export function estadoDeVistas(activa, nombres) {
+  if (!nombres.includes(activa)) throw new Error(`No hay una vista «${activa}»`);
+  return nombres.map(nombre => ({ nombre, oculta: nombre !== activa, presionado: nombre === activa }));
+}
+
+// El selector llega oculto del servidor (sin JavaScript no haría nada); acá se muestra y se engancha.
+export function montarSelector(raiz = document) {
+  const caja = raiz.querySelector('[data-selector-vista]');
+  if (!caja) return;
+  const botones = [...caja.querySelectorAll('button[data-vista]')];
+  const vistas = new Map([...raiz.querySelectorAll('[data-vista-lote]')].map(v => [v.getAttribute('data-vista-lote'), v]));
+  const nombres = botones.map(b => b.getAttribute('data-vista')).filter(n => vistas.has(n));
+  if (nombres.length < 2) return;   // sin las dos vistas el selector no sirve: se queda oculto y se ve lo que haya
+
+  function mostrar(activa) {
+    for (const e of estadoDeVistas(activa, nombres)) vistas.get(e.nombre).hidden = e.oculta;
+    for (const b of botones) b.setAttribute('aria-pressed', String(b.getAttribute('data-vista') === activa));
+  }
+  for (const b of botones) b.addEventListener('click', () => mostrar(b.getAttribute('data-vista')));
+  caja.hidden = false;
 }
 
 export function montarPlano(raiz = document) {

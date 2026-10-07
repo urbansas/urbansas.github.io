@@ -22,6 +22,7 @@ main { max-width: 1080px; margin: 0 auto; padding: 0 18px; }
 .galeria { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 16px; align-items: start; }
 .galeria img { width: 100%; border-radius: 12px; border: 1px solid var(--linea); }
 .galeria.una { grid-template-columns: minmax(0, 520px); }  /* una sola foto, vertical: no se estira al ancho de la página */
+.galeria + .galeria { margin-top: 16px; }
 .galeria figure { margin: 0; }
 .galeria .ancha { grid-column: 1 / -1; max-width: 780px; }
 .galeria figcaption { font-size: 13px; color: var(--suave); margin-top: 6px; }
