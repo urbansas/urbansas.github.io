@@ -192,6 +192,18 @@ export function validarCasa(casa) {
   if (!RUTA_IMG_CASA.test(String(casa.poster ?? ''))) {
     throw new Error(`El poster del anteproyecto no es de este sitio: ${casa.poster}`);
   }
+  if (casa.segundoVideo !== undefined) {
+    const s = casa.segundoVideo;
+    if (!s || typeof s !== 'object' || typeof s.titulo !== 'string' || !s.titulo.trim()) {
+      throw new Error('El segundo video del anteproyecto no trae «titulo».');
+    }
+    if (!RUTA_VIDEO_CASA.test(String(s.video ?? ''))) {
+      throw new Error(`El segundo video del anteproyecto no es de este sitio: ${s.video}`);
+    }
+    if (!RUTA_IMG_CASA.test(String(s.poster ?? ''))) {
+      throw new Error(`El poster del segundo video no es de este sitio: ${s.poster}`);
+    }
+  }
   if (!Array.isArray(casa.imagenes) || casa.imagenes.length === 0) {
     throw new Error('El manifiesto de anteproyecto no trae imágenes.');
   }

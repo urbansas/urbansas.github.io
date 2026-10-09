@@ -173,6 +173,10 @@ export function construirCasa(manifiesto) {
     video: manifiesto.video,
     poster: manifiesto.poster,
     duracion: manifiesto.duracion ?? null,
+    // El lote 9 trae dos: cómo se arma la casa y el recorrido.
+    segundoVideo: manifiesto.segundoVideo
+      ? { ...manifiesto.segundoVideo, duracion: manifiesto.segundoVideo.duracion ?? null }
+      : null,
     datos: (manifiesto.datos ?? []).map(([cifra, glosa]) => ({ cifra, glosa })),
     imagenes: manifiesto.imagenes.map(([src, pie]) => ({ src, pie }))
   };
@@ -362,8 +366,9 @@ export function montarFicha(json, { svg, tarjetas, dialogo }) {
     // Pausar ANTES de vaciar. Un <video> arrancado al que se le quita el
     // padre del documento sigue sonando en varios navegadores: el cliente
     // cierra la ficha y le queda la música puesta sin nada en pantalla.
-    const v = casaCaja.querySelector('video');
-    if (v) { v.pause(); v.removeAttribute('src'); v.load(); }
+    for (const v of casaCaja.querySelectorAll('video')) {
+      v.pause(); v.removeAttribute('src'); v.load();
+    }
     casaCaja.replaceChildren();
     casaCaja.hidden = true;
   }
@@ -389,23 +394,35 @@ export function montarFicha(json, { svg, tarjetas, dialogo }) {
     aviso.textContent = c.aviso;
     partes.push(aviso);
 
-    const video = document.createElement('video');
-    video.className = 'casa-video';
-    video.controls = true;
-    // Ni `auto` ni `metadata`: en GitHub Pages no hay streaming, así que
-    // `auto` se bajaría el archivo entero por abrir una ficha. Arranca cuando
-    // el cliente le da play, y no antes.
-    video.preload = 'none';
-    video.playsInline = true;
-    video.poster = c.poster;
-    video.src = c.video;
-    partes.push(video);
+    function agregarVideo(src, poster, duracion) {
+      const video = document.createElement('video');
+      video.className = 'casa-video';
+      video.controls = true;
+      // Ni `auto` ni `metadata`: en GitHub Pages no hay streaming, así que
+      // `auto` se bajaría el archivo entero por abrir una ficha. Arranca cuando
+      // el cliente le da play, y no antes.
+      video.preload = 'none';
+      video.playsInline = true;
+      video.poster = poster;
+      video.src = src;
+      partes.push(video);
 
-    if (c.duracion) {
-      const pie = document.createElement('p');
-      pie.className = 'casa-pie';
-      pie.textContent = c.duracion;
-      partes.push(pie);
+      if (duracion) {
+        const pie = document.createElement('p');
+        pie.className = 'casa-pie';
+        pie.textContent = duracion;
+        partes.push(pie);
+      }
+    }
+
+    agregarVideo(c.video, c.poster, c.duracion);
+
+    if (c.segundoVideo) {
+      const t = document.createElement('h5');
+      t.className = 'casa-subtitulo';
+      t.textContent = c.segundoVideo.titulo;
+      partes.push(t);
+      agregarVideo(c.segundoVideo.video, c.segundoVideo.poster, c.segundoVideo.duracion);
     }
 
     if (c.datos.length) {

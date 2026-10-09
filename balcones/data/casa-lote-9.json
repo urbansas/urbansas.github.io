@@ -1,0 +1,74 @@
+{
+  "titulo": "Qué se puede construir acá",
+  "entrada": "Una cabaña A-frame junto a la vía, sobre la explanación que ya está hecha. El cuerpo central es un techo en A de 7,20 metros a la cumbrera, con la sala abajo y un altillo arriba, entre dos contenedores de 20 pies que llevan una alcoba y un baño cada uno.",
+  "aviso": "El lote se vende SIN construcción. Esto es un anteproyecto: una propuesta de lo que cabe acá, no una casa construida ni una obra contratada.",
+  "video": "video/casa-lote-9-armado.mp4",
+  "poster": "img/casa-lote-9/poster.jpg",
+  "duracion": "31 segundos: cómo se arma, etapa por etapa, sobre la foto real del lote",
+  "segundoVideo": {
+    "titulo": "El recorrido",
+    "video": "video/casa-lote-9.mp4",
+    "poster": "img/casa-lote-9/poster-recorrido.jpg",
+    "duracion": "53 segundos"
+  },
+  "datos": [
+    [
+      "72 m²",
+      "útiles: el cuerpo en A y los dos contenedores"
+    ],
+    [
+      "12,38 × 10,90 m",
+      "de huella en total"
+    ],
+    [
+      "7,20 m",
+      "del piso a la cumbrera: el altillo cabe bajo el techo en A"
+    ],
+    [
+      "37 m²",
+      "de deck con fogata, entre los dos contenedores"
+    ]
+  ],
+  "imagenes": [
+    [
+      "img/casa-lote-9/00-montaje.jpg",
+      "El anteproyecto montado sobre una foto real de este lote, tomada con dron el 17 de septiembre de 2026. La cabaña va junto a la vía, sobre la explanación que ya está hecha, y el carro se queda en el parqueadero de triturado"
+    ],
+    [
+      "img/casa-lote-9/01-tres-cuartos.jpg",
+      "El cuerpo en A va entre dos contenedores de 20 pies, de 6,06 por 2,44 metros cada uno"
+    ],
+    [
+      "img/casa-lote-9/02-ventanal.jpg",
+      "De frente: el ventanal va de piso a cumbrera y el deck queda entre los dos contenedores"
+    ],
+    [
+      "img/casa-lote-9/03-deck.jpg",
+      "El deck de 37 m², con la fogata en el centro, al atardecer"
+    ],
+    [
+      "img/casa-lote-9/04-costado.jpg",
+      "Desde el costado, con el parqueadero en triturado al lado de la casa"
+    ],
+    [
+      "img/casa-lote-9/05-sala.jpg",
+      "La sala, bajo el techo en A: acá el techo es el muro. La escalera sube al altillo"
+    ],
+    [
+      "img/casa-lote-9/06-altillo.jpg",
+      "El altillo, bajo la cumbrera, mirando por el vidrio del frente"
+    ],
+    [
+      "img/casa-lote-9/07-alcoba.jpg",
+      "Una de las alcobas: cada contenedor lleva una alcoba y su baño"
+    ],
+    [
+      "img/casa-lote-9/08-bano.jpg",
+      "El baño de una de las alcobas, dentro del contenedor"
+    ],
+    [
+      "img/casa-lote-9/09-noche.jpg",
+      "De noche, con la fogata prendida"
+    ]
+  ]
+}

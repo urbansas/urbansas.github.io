@@ -267,6 +267,7 @@ dialog.ficha:not([open]) { display: none; }
 
 .casa-video { width: 100%; border-radius: 10px; display: block; background: #000; }
 .casa-pie { font-size: .8rem; color: var(--suave); margin: .4rem 0 0; }
+.casa-subtitulo { margin: 1.1rem 0 .4rem; font-size: 1rem; color: var(--verde); }
 
 /* Dos columnas SIEMPRE: la ficha mide unos 450 px aunque la ventana sea ancha,
    y a cuatro columnas «15 × 22 m» se parte en tres renglones. */
