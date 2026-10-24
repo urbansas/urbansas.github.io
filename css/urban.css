@@ -57,3 +57,15 @@ main { max-width: 1080px; margin: 0 auto; padding: 0 18px; }
 .hecho a { color: var(--cobre); }
 .video-vertical { max-width: 420px; margin: 0 auto; }
 .video-vertical video { width: 100%; border-radius: 12px; background: var(--verde); aspect-ratio: 9/16; }
+.calculadora { background: #fff; border: 1px solid var(--linea); border-radius: 12px; padding: 16px 18px; max-width: 640px; }
+.calculadora > p:first-child { margin-top: 0; }
+.calculadora label { display: flex; justify-content: space-between; gap: 12px; font-weight: 600; margin-top: 14px; }
+.calculadora label strong { color: var(--cobre-hondo); white-space: nowrap; }
+.calculadora input[type="range"] { width: 100%; accent-color: var(--cobre-hondo); margin: 8px 0 0; }
+.plan-extremos { display: flex; justify-content: space-between; font-size: 12px; color: var(--suave); margin: 0; }
+.plan-resultado { background: var(--arena); border-radius: 10px; padding: 12px 14px; margin-top: 16px; }
+.plan-filas { margin: 0; }
+.plan-filas div { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px solid var(--linea); }
+.plan-filas div:last-child { border-bottom: 0; font-weight: 700; color: var(--cobre-hondo); }
+.plan-filas dd { margin: 0; white-space: nowrap; }
+.plan-resumen { margin: 8px 0 0; font-size: 15px; }
