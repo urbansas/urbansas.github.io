@@ -69,3 +69,10 @@ main { max-width: 1080px; margin: 0 auto; padding: 0 18px; }
 .plan-filas div:last-child { border-bottom: 0; font-weight: 700; color: var(--cobre-hondo); }
 .plan-filas dd { margin: 0; white-space: nowrap; }
 .plan-resumen { margin: 8px 0 0; font-size: 15px; }
+/* Aviso de cookies (publico/js/cookies.js): encima del botón de WhatsApp hasta que el visitante decida. Los dos botones pesan lo mismo. */
+.aviso-cookies { position: fixed; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); z-index: 60; background: #fff; color: var(--texto); border: 1px solid var(--linea); border-radius: 12px; padding: 14px 16px; box-shadow: 0 6px 24px rgba(35,40,31,.18); font-size: 15px; line-height: 1.5; }
+.aviso-cookies p { margin: 0 0 12px; }
+.aviso-cookies div { display: flex; gap: 8px; }
+.aviso-cookies button { flex: 1; font: inherit; font-weight: 600; padding: 10px 16px; border-radius: 999px; border: 0; background: var(--cobre-hondo); color: #fff; cursor: pointer; }
+@media (min-width: 760px) { .aviso-cookies { right: auto; left: 24px; bottom: 24px; max-width: 440px; } }
+.cambiar-cookies { background: none; border: 0; padding: 0 0 0 10px; font: inherit; color: var(--arena); text-decoration: underline; cursor: pointer; }
