@@ -31,6 +31,8 @@
 .etapa-rotulo[data-etapa="4"] { fill: #9EDCF2; }
 .plano figcaption { font-size: 13px; color: var(--suave); margin-top: 6px; }
 @media (max-width: 995px) { .solo-movil { display: inline; } }
+/* El plano de las etapas 1 y 2 trae más lotes en menos papel: en pantallas angostas se recorre a 1200 px, donde cada círculo mide ~25 px. */
+@media (max-width: 995px) { .plano-etapas12 .plano-lienzo { min-width: 1200px; } }
 .lote { cursor: pointer; }
 .lote text { font-family: inherit; font-weight: 700; pointer-events: none; }
 .lote[data-estado="disponible"] circle { fill: #3D4437; stroke: #FAF6F1; stroke-width: 3; }
