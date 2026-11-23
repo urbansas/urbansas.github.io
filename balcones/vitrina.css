@@ -304,3 +304,7 @@ dialog.ficha:not([open]) { display: none; }
    flotando a media ficha con un vacío blanco debajo. */
 .ficha .boton { display: block; flex: none; margin: 0; border-radius: 0 0 12px 12px; }
 .ficha .boton[hidden] { display: none; }
+
+/* Sector 3 en preventa (desde el 23-nov-2026): el aviso de la página y el rótulo de cada grupo de tarjetas. */
+.preventa { border-left: 3px solid var(--cobre); padding-left: 8px; }
+.tarjetas .grupo-tarjetas { grid-column: 1 / -1; margin: 12px 0 0; font-weight: 700; color: var(--cobre-hondo); }

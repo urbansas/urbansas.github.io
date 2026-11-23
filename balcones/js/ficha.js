@@ -7,7 +7,7 @@
 // que `validarInventario` ya deja en números y estados de una lista cerrada.
 // Por eso esta ficha puede armarse directo del inventario y aquella no.
 
-import { validarInventario, validarCasa } from './inventario.js';
+import { validarInventario, validarCasa, idLote, nombreLote } from './inventario.js';
 import { metros } from './formato.js';
 
 // El número de ventas. Vive acá y el pie de página de index.html lo repite;
@@ -42,17 +42,20 @@ function enlaceMapa(lat, lon) {
   return `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
 }
 
-function enlaceWhatsApp(n) {
-  const texto = `Hola, vi en la página de Urban el proyecto Condominio Balcones, lote ${n}. Quiero precio y formas de pago.`;
+function enlaceWhatsApp(lote) {
+  const cual = lote.sector >= 3 ? `lote ${lote.n} del sector ${lote.sector}` : `lote ${lote.n}`;
+  const texto = `Hola, vi en la página de Urban el proyecto Condominio Balcones, ${cual}. Quiero precio y formas de pago.`;
   return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(texto)}`;
 }
 
-export function construirFichaLote(json, n) {
+// `id` es la clave de idLote: «7» en los sectores 1 y 2, «3-15» en el sector 3.
+// Se acepta también el número (7), que es como lo pasaban las páginas viejas.
+export function construirFichaLote(json, id) {
   validarInventario(json);
 
-  const lote = json.lotes.find(l => l.n === n);
+  const lote = json.lotes.find(l => idLote(l) === String(id));
   if (!lote) {
-    throw new Error(`El inventario no tiene ningún lote ${n}.`);
+    throw new Error(`El inventario no tiene ningún lote ${id}.`);
   }
 
   const areaTexto = metros(lote.area);
@@ -65,9 +68,10 @@ export function construirFichaLote(json, n) {
   const demas = hayMas ? lote.areaReal - lote.area : 0;
 
   return {
+    id: idLote(lote),
     n: lote.n,
     sector: lote.sector,
-    titulo: `Lote ${lote.n}`,
+    titulo: nombreLote(lote),
     areaTexto,
     // Cuando hay dos áreas, la etiqueta de la primera deja de ser «Área» a
     // secas: una fila que dice «Área 2.140» encima de otra que dice 2.394 se
@@ -78,7 +82,12 @@ export function construirFichaLote(json, n) {
       ? `Se escrituran ${metros(lote.area)} y se entregan ${metros(lote.areaReal)}: ` +
         `la subdivisión se radicó antes del movimiento de tierra, y el lote quedó ` +
         `${metros(demas)} más grande en terreno. El folio dirá ${metros(lote.area)}.`
-      : null,
+      // Sector 3: se vende en preventa con el proyecto en revisión en Planeación
+      // (radicado del 20-nov-2026). Lo anunciado obliga, así que la ficha dice
+      // de dónde sale el área y que puede ajustarse.
+      : lote.sector >= 3
+        ? 'Preventa. El área es la del proyecto que está en revisión en la Secretaría de Planeación y puede ajustarse con la licencia.'
+        : null,
     estado: lote.estado,
     estadoTexto: ETIQUETA[lote.estado],
     disponible,
@@ -90,7 +99,7 @@ export function construirFichaLote(json, n) {
     // todavía se vende: enseñarle a alguien lo que se puede construir en un
     // lote con dueño es enseñarle algo que no puede comprar.
     casa: disponible ? (lote.casa ?? null) : null,
-    whatsapp: disponible ? enlaceWhatsApp(lote.n) : null,
+    whatsapp: disponible ? enlaceWhatsApp(lote) : null,
     // Un lote colocado tambien lleva alfiler: quien mira quiere saber donde
     // quedo lo que se vendio. Lo que no lleva es el boton de pedirlo.
     mapa: (typeof lote.lat === 'number' && typeof lote.lon === 'number')
@@ -109,10 +118,10 @@ export function construirFichaLote(json, n) {
 // número cambiado a mano por curiosidad, un lote que ya no existe— y entonces
 // la página abre normal. Un enlace roto no puede dejar a nadie en blanco.
 export function loteDelEnlace(hash, json) {
-  const m = /^#?lote-(\d{1,3})$/.exec(String(hash ?? '').trim());
+  // «#lote-7» en los sectores 1 y 2, «#lote-3-15» en el sector 3.
+  const m = /^#?lote-(\d{1,3}(?:-\d{1,3})?)$/.exec(String(hash ?? '').trim());
   if (!m) return null;
-  const n = Number(m[1]);
-  return json.lotes.some(l => l.n === n) ? n : null;
+  return json.lotes.some(l => idLote(l) === m[1]) ? m[1] : null;
 }
 
 // El visor 360.
@@ -222,7 +231,7 @@ export function montarFicha(json, { svg, tarjetas, dialogo }) {
   };
 
   function abrir(n) {
-    const f = construirFichaLote(json, Number(n));
+    const f = construirFichaLote(json, n);
 
     poner('.ficha-titulo', f.titulo);
     poner('.ficha-estado', f.estadoTexto);
@@ -241,8 +250,10 @@ export function montarFicha(json, { svg, tarjetas, dialogo }) {
       nota.hidden = false;
     } else {
       filaReal.hidden = true;
-      nota.hidden = true;
-      nota.textContent = '';
+      // Sin segunda área, la nota sale solo si la ficha trae una propia: la de
+      // preventa del Sector 3.
+      nota.textContent = f.notaArea ?? '';
+      nota.hidden = !f.notaArea;
     }
     poner('.ficha-sector', `Sector ${f.sector}`);
     dialogo.querySelector('.ficha-estado').dataset.estado = f.estado;
@@ -288,7 +299,7 @@ export function montarFicha(json, { svg, tarjetas, dialogo }) {
     // mandar. `replaceState` y no `pushState`: si cada lote dejara una entrada
     // en el historial, salir de la ficha con el botón de atrás obligaría a
     // pulsarlo tantas veces como lotes se hayan mirado.
-    if (history.replaceState) history.replaceState(null, '', `#lote-${f.n}`);
+    if (history.replaceState) history.replaceState(null, '', `#lote-${f.id}`);
 
     dialogo.showModal();
     montarPano(f);

@@ -37,6 +37,28 @@ const RUTA_CASA = /^data\/casa-lote-[0-9]{1,3}\.json$/;
 // tener que tocarlo cada vez que se compre un lote vecino.
 const CAJA = { latMin: 6.5, latMax: 6.8, lonMin: -75.6, lonMax: -75.3 };
 
+// El Sector 3 (radicado en Planeación el 20-nov-2026) numera sus lotes del 1 al
+// 64, como el plano radicado y como van a salir las escrituras. Los sectores 1 y
+// 2 ya usan del 1 al 14, así que el número solo no identifica un lote: la clave
+// es «3-15» en el sector 3 y el número a secas en los otros dos, para que los
+// enlaces que ya circulan (…/#lote-7) sigan abriendo el mismo lote.
+export function idLote(l) {
+  return l.sector >= 3 ? `${l.sector}-${l.n}` : String(l.n);
+}
+
+// Cómo se nombra el lote en la página: «Lote 7» en los sectores 1 y 2, y
+// «Sector 3 · Lote 15» en el 3, que es como ya lo nombran los compradores.
+export function nombreLote(l) {
+  return l.sector >= 3 ? `Sector ${l.sector} · Lote ${l.n}` : `Lote ${l.n}`;
+}
+
+// Orden de la página: por sector y, dentro del sector, por número.
+export const porSectorYNumero = (a, b) => (a.sector ?? 0) - (b.sector ?? 0) || a.n - b.n;
+
+// El área viene del plano: entera en los sectores 1 y 2 y con centésimas en el
+// 3 (2.049,42 m²). Más de dos decimales no sale de ningún plano.
+const areaValida = (a) => typeof a === 'number' && a > 0 && Math.abs(a * 100 - Math.round(a * 100)) < 1e-6;
+
 export function validarInventario(json) {
   if (!json) throw new Error('No hay inventario.');
   if (!Array.isArray(json.lotes) || json.lotes.length === 0) {
@@ -47,10 +69,11 @@ export function validarInventario(json) {
     if (!Number.isInteger(l.n) || l.n < 1) {
       throw new Error(`Número de lote inválido: ${l.n}`);
     }
-    if (vistos.has(l.n)) throw new Error(`Lote repetido: ${l.n}`);
-    vistos.add(l.n);
-    if (!Number.isInteger(l.area) || l.area <= 0) {
-      throw new Error(`El área del lote ${l.n} no es un entero positivo.`);
+    const id = idLote(l);
+    if (vistos.has(id)) throw new Error(`Lote repetido: ${nombreLote(l)}`);
+    vistos.add(id);
+    if (!areaValida(l.area)) {
+      throw new Error(`El área del ${nombreLote(l)} no es un número positivo con hasta dos decimales.`);
     }
     // `areaReal` es el área que se ENTREGA, distinta de la que se escritura.
     //
@@ -140,8 +163,10 @@ export function lotesDisponibles(json) {
   validarInventario(json);
   return json.lotes
     .filter(l => l.estado === 'disponible')
-    .sort((a, b) => a.n - b.n)
+    .sort(porSectorYNumero)
     .map(l => ({
+      id: idLote(l),
+      nombre: nombreLote(l),
       n: l.n,
       sector: l.sector,
       area: l.area,
