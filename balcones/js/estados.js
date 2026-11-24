@@ -17,11 +17,8 @@ const PUBLICOS = new Set(['disponible', 'reservado', 'vendido']);
 
 // Pone encima del inventario construido lo que diga la app. Devuelve una copia:
 // el inventario que recibe no se toca. Lo que no se entienda se ignora, y un lote
-// que la app no traiga se queda como estaba.
-//
-// El lote en especie es la excepción: la app lo da «vendido» porque de cara al
-// público no se distinguen, pero la página lo nombra aparte (no se vendió, se
-// entregó como pago). Si la app lo devuelve a disponible, sí se aplica.
+// que la app no traiga se queda como estaba. El lote en especie la app lo da
+// «vendido», y así se publica desde el 24-nov-2026.
 export function aplicarEstados(inv, estados) {
   if (!Array.isArray(estados)) return { inv, cambiados: 0 };
   const porId = new Map();
@@ -32,7 +29,6 @@ export function aplicarEstados(inv, estados) {
   const lotes = inv.lotes.map((l) => {
     const nuevo = porId.get(idLote(l));
     if (!nuevo || nuevo === l.estado) return l;
-    if (l.estado === 'especie' && nuevo === 'vendido') return l;
     cambiados++;
     return { ...l, estado: nuevo };
   });
