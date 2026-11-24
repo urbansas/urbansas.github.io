@@ -29,7 +29,7 @@
   <div class="sobre"><h1>Condominio Balcones</h1><p>Lotes de casa-finca en Santa Rosa de Osos</p></div></section>
 <p class="nota">Foto de dron del 12 de septiembre de 2026.</p>
 <p class="rango">de 2.049,42 a 3.413,46 m² · desde $225 hasta $376 millones</p>
-<p>71 lotes disponibles.</p>
+<p id="cuantos-disponibles">71 lotes disponibles.</p>
 <p class="preventa"><strong>Sector 3 en preventa: 64 lotes nuevos.</strong> Sus áreas son las del proyecto que está en revisión en la Secretaría de Planeación y pueden ajustarse con la licencia.</p>
 <p class="nota">Precios de lista, sujetos a disponibilidad y a cambio sin previo aviso.</p>
 
@@ -88,9 +88,19 @@
   import { pintarMapa } from '/balcones/js/mapa.js';
   import { montarFicha, loteDelEnlace } from '/balcones/js/ficha.js';
   import { idLote, nombreLote, porSectorYNumero } from '/balcones/js/inventario.js';
-  const inv = await (await fetch('/balcones/data/lotes.json')).json();
+  import { pedirEstados, aplicarEstados } from '/balcones/js/estados.js';
+  // El estado de cada lote lo manda la app de ventas. Se le pregunta junto con el inventario y el plano,
+  // con 3 s de plazo: si no contesta, queda el estado con que se publicó la página.
+  const [base, plano, estados] = await Promise.all([
+    fetch('/balcones/data/lotes.json').then(r => r.json()),
+    fetch('/balcones/img/mapa-aereo.svg').then(r => r.text()),
+    pedirEstados()
+  ]);
+  const { inv } = aplicarEstados(base, estados);
+  const quedan = inv.lotes.filter(l => l.estado === 'disponible').length;
+  document.getElementById('cuantos-disponibles').textContent = `${quedan} ${quedan === 1 ? 'lote disponible' : 'lotes disponibles'}.`;
   const caja = document.getElementById('mapa');
-  caja.innerHTML = await (await fetch('/balcones/img/mapa-aereo.svg')).text();
+  caja.innerHTML = plano;
   const vista = pintarMapa(caja.querySelector('svg'), inv);
   // La casilla de «Reservado» sale del dato: el día que no quede ninguno, desaparece sola.
   document.getElementById('leyenda-reservado').hidden = vista.reservados === 0;
